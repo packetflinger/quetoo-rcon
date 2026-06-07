@@ -1,0 +1,4 @@
+github.com/packetflinger/libquetoo v0.0.0-20260603135738-48705c6b60c9 h1:h7AJVHoNcHW6/JeyVd5eNXVpULRq3ptU95hOiRQsWwA=
+github.com/packetflinger/libquetoo v0.0.0-20260603135738-48705c6b60c9/go.mod h1:+mJqZYksi8NvKM/dyLKc4WyomzdI4GjgE8BRhEnAFSA=
+google.golang.org/protobuf v1.36.11 h1:fV6ZwhNocDyBLK0dj+fg8ektcVegBBuEolpbTQyBNVE=
+google.golang.org/protobuf v1.36.11/go.mod h1:HTf+CrKn2C3g5S8VImy6tdcUvCska2kB7j23XfzDpco=
