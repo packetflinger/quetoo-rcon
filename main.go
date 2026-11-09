@@ -65,7 +65,11 @@ func main() {
 	}
 
 	if len(rcon.Output) > 0 {
-		fmt.Println(stripColor(rcon.Output))
+		if isTerminal(os.Stdout) {
+			fmt.Println(colorize(rcon.Output))
+		} else {
+			fmt.Println(stripColor(rcon.Output))
+		}
 	}
 }
 
@@ -127,15 +131,40 @@ func showUsage() {
 	fmt.Println("command\n", "  The command to be executed on the remote server")
 }
 
+// Quake 3 style color codes (^0-^9) and their ANSI equivalents.
+var (
+	ansiColors = strings.NewReplacer(
+		"^0", "\x1b[30m", // black
+		"^1", "\x1b[31m", // red
+		"^2", "\x1b[32m", // green
+		"^3", "\x1b[33m", // yellow
+		"^4", "\x1b[34m", // blue
+		"^5", "\x1b[36m", // cyan
+		"^6", "\x1b[35m", // magenta
+		"^7", "\x1b[39m", // white (terminal default)
+		"^8", "\x1b[38;5;208m", // orange
+		"^9", "\x1b[90m", // grey
+	)
+	noColors = strings.NewReplacer(
+		"^0", "", "^1", "", "^2", "", "^3", "", "^4", "",
+		"^5", "", "^6", "", "^7", "", "^8", "", "^9", "",
+	)
+)
+
+// colorize converts color codes to ANSI escapes, resetting at the end.
+func colorize(in string) string {
+	return ansiColors.Replace(in) + "\x1b[0m"
+}
+
 func stripColor(in string) string {
-	out := strings.ReplaceAll(in, "^1", "")
-	out = strings.ReplaceAll(out, "^2", "")
-	out = strings.ReplaceAll(out, "^3", "")
-	out = strings.ReplaceAll(out, "^4", "")
-	out = strings.ReplaceAll(out, "^5", "")
-	out = strings.ReplaceAll(out, "^6", "")
-	out = strings.ReplaceAll(out, "^7", "")
-	out = strings.ReplaceAll(out, "^8", "")
-	out = strings.ReplaceAll(out, "^9", "")
-	return out
+	return noColors.Replace(in)
+}
+
+// isTerminal reports whether f is a terminal, so piped output stays plain.
+func isTerminal(f *os.File) bool {
+	if os.Getenv("NO_COLOR") != "" {
+		return false
+	}
+	fi, err := f.Stat()
+	return err == nil && fi.Mode()&os.ModeCharDevice != 0
 }
